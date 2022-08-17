@@ -1,17 +1,69 @@
 #!/bin/bash
 
+
+
 while [ 1 ]
 do
-glavni_izbor=$(
-	whiptail --title "Glavni izbornik" --menu "Odaberite:" 16 58 9 \
-    "1" "Namirnice"   \
+izbor=$(
+	whiptail --title "GLAVNI IZBORNIK" --menu "\nOdaberi:" 12 25 3 \
+    "1" "Proizvodi"   \
     "2" "YouTube"   \
 	"9" "Izlaz"  3>&2 2>&1 1>&3	
 )
 
-case $glavni_izbor in
+case $izbor in
 	"1")
-        
+        shopping_lista=()
+        while [ 1 ]
+        do
+            izbor=$(
+                whiptail --title "PROIZVODI" --menu "\nOdaberi:" 13 25 4 \
+                "1" "Dodaj proizvod na shopping listu"   \
+                "2" "Pregledaj shopping listu"   \
+                "3" "Pošalji shopping listu na mail"   \
+                "9" "Izlaz"  3>&2 2>&1 1>&3	
+            )
+            case $izbor in
+	        "1")
+                kljucna_rijec=$(whiptail --inputbox "\nUnesi naziv proizvoda:" 10 30 --title "UNOS PROIZVODA" 3>&1 1>&2 2>&3)
+                izbrisi_prethodno_dodane_proizvode
+                #TO DO
+                dodaj_nove_proizvode_iz_Konzuma
+                dodaj_nove_proizvode_iz_Kauflanda
+            ;;
+            "2")
+                #TO DO
+                ispisi_proizvode "${shopping_lista}"
+            ;;
+            "3")
+                izbor=$(
+                whiptail --title "POŠALJI MAIL" --menu "\nOdaberi:" 13 25 4 \
+                "1" "mpicic@foi.hr"   \
+                "2" "Unesi novi mail"   \
+                "9" "Izlaz"  3>&2 2>&1 1>&3	
+                )
+                case $izbor in
+                "1")
+                    #TO DO
+                    posalji_shopping_listu_na_mail "mpicic@foi.hr"
+                ;;
+                "2")
+                    mail=$(whiptail --inputbox "\nUnesi mail:" 10 30 --title "UNOS MAILA" 3>&1 1>&2 2>&3)
+                    posalji_shopping_listu_na_mail "$mail"
+                ;;
+                "9") 
+                    break
+                ;;
+                esac
+            ;;
+            "9")
+                break
+            ;;
+            esac
+        done
+    ;;
+    "2")
+        #TO DO
     ;;
     "9") 
         exit

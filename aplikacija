@@ -1,0 +1,21 @@
+#!/bin/bash
+
+while [ 1 ]
+do
+glavni_izbor=$(
+	whiptail --title "Glavni izbornik" --menu "Odaberite:" 16 58 9 \
+    "1" "Namirnice"   \
+    "2" "YouTube"   \
+	"9" "Izlaz"  3>&2 2>&1 1>&3	
+)
+
+case $glavni_izbor in
+	"1")
+        
+    ;;
+    "9") 
+        exit
+    ;;
+esac
+done
+exit

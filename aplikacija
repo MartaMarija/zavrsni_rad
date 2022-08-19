@@ -102,27 +102,27 @@ function sortiraj_proizvode_po_cijeni()
     done < svi_proizvodi.txt
 }
 
-function ispisi_proizvode()
+function ispisi_sadrzaj_polja()
 {
     brojac=0
     polje=("$@")
-    prikaz_proizvoda=()
-    for proizvod in "${polje[@]}"
+    prikaz_sadrzaja=()
+    for element in "${polje[@]}"
     do
         ((brojac++))
-        prikaz_proizvoda+=("$brojac" "$proizvod")
+        prikaz_sadrzaja+=("$brojac" "$element")
     done
-    odabrani_proizvod=$(
-        whiptail --title "PROIZVODI" --menu "\nOdaberi proizvod za košaricu:" 25 135 15 \
-        "${prikaz_proizvoda[@]}"  3>&2 2>&1 1>&3	
+    odabrani_red=$(
+        whiptail --title "PREGLED" --menu "\n" 25 135 15 \
+        "${prikaz_sadrzaja[@]}"  3>&2 2>&1 1>&3	
     )
-    #Cancel -> 1, ESC key -> -1, OK ili ako je odabran proizvod -> 0
+    #Cancel -> 1, ESC key -> -1, OK ili ako je odabran red -> 0
     exitstatus=$?
 }
 
 function dodaj_odabrani_proizvod_u_kosaricu()
 {
-    (( pozicija_odabranog_proizvoda=odabrani_proizvod-1 ))
+    (( pozicija_odabranog_proizvoda=odabrani_red-1 ))
     shopping_lista+=("${sortirani_proizvodi[$pozicija_odabranog_proizvoda]}")
 }
 
@@ -193,6 +193,33 @@ function posalji_shopping_listu_na_mail()
             }'
 }
 
+function dohvati_id_i_naslove_videa()
+{
+    id_youtube_kanala=("UC-lHJZR3Gqxm24_Vd_AJ5Yw" "UCsXVk37bltHxD1rDPwtNM8Q" "UCSPLhwvj0gBufjDRzSQb3GQ")
+    moj_kljuc="AIzaSyB6YwYjuqes2azNNW8ZIzhlfIsL9dEZFUc"
+    $(
+        curl -s "https://www.googleapis.com/youtube/v3/search?key=$moj_kljuc&channelId=${id_youtube_kanala[izbor_youtube_kanala-1]}&part=snippet,id&order=date&maxResults=10" | 
+        jq '.items | .[] | .id.videoId, .snippet.title' |
+        sed 's#"##g' > podaci_o_videima.txt
+    )
+}
+
+function razdvoji_id_i_naslove()
+{
+    id_videa=()
+    naslov_videa=()
+    brojac=0
+    while read red
+    do
+        if [ $(($brojac%2)) -eq 0 ]; then
+            id_videa+=("$red")
+        else
+            naslov_videa+=("$red")
+        fi
+        ((brojac++))
+    done < podaci_o_videima.txt
+}
+
 while [ 1 ]
 do
 izbor=$(
@@ -223,7 +250,7 @@ case $izbor in
                 sortiraj_proizvode_po_cijeni
                 while [ 1 ]
                 do
-                    ispisi_proizvode "${sortirani_proizvodi[@]}"
+                    ispisi_sadrzaj_polja "${sortirani_proizvodi[@]}"
                     if [ $exitstatus -eq 0 ]; then                
                         dodaj_odabrani_proizvod_u_kosaricu
                     else
@@ -232,7 +259,7 @@ case $izbor in
                 done
             ;;
             "2")
-                ispisi_proizvode "${shopping_lista[@]}"
+                ispisi_sadrzaj_polja "${shopping_lista[@]}"
             ;;
             "3")
                 izbor=$(
@@ -261,7 +288,29 @@ case $izbor in
         done
     ;;
     "2")
-        #TO DO
+        izbor_youtube_kanala=$(
+			whiptail --title "MENU" --menu "\nOdaberi:" 12 25 3 \
+			"1" "PewDiePie"   \
+			"2" "Kurzgesagt"   \
+			"3" "BobbyBroccoli"  3>&2 2>&1 1>&3	
+		)  
+        exitstatus=$?
+        if [ $exitstatus -eq 0 ]; then                
+            dohvati_id_i_naslove_videa
+            razdvoji_id_i_naslove
+            while [ 1 ]
+            do
+                ispisi_sadrzaj_polja "${naslov_videa[@]}"
+                if [ $exitstatus -eq 0 ]; then                
+                    link_videa="https://www.youtube.com/watch?v=${id_videa[odabrani_red-1]}"
+                    xdg-open ${link_videa}
+                else
+                    break
+                fi
+            done
+        else
+            break
+        fi       
     ;;
     "9") 
         exit

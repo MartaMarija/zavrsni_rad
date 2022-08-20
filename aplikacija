@@ -169,7 +169,7 @@ function posalji_shopping_listu_na_mail()
     razdvoji_proizvode
     sastavi_sadrzaj_maila
 
-    SENDGRID_API_KEY="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"
+    SENDGRID_API_KEY=""
     EMAIL_TO=$1
 
     curl -X "POST" "https://api.sendgrid.com/v3/mail/send" \
@@ -196,7 +196,7 @@ function posalji_shopping_listu_na_mail()
 function dohvati_id_i_naslove_videa()
 {
     id_youtube_kanala=("UC-lHJZR3Gqxm24_Vd_AJ5Yw" "UCsXVk37bltHxD1rDPwtNM8Q" "UCSPLhwvj0gBufjDRzSQb3GQ")
-    moj_kljuc="AIzaSyB6YwYjuqes2azNNW8ZIzhlfIsL9dEZFUc"
+    moj_kljuc=""
     $(
         curl -s "https://www.googleapis.com/youtube/v3/search?key=$moj_kljuc&channelId=${id_youtube_kanala[izbor_youtube_kanala-1]}&part=snippet,id&order=date&maxResults=10" | 
         jq '.items | .[] | .id.videoId, .snippet.title' |

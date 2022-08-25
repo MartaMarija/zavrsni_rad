@@ -10,6 +10,8 @@ function izbrisi_prethodno_dodane_proizvode()
 function unesi_kljucnu_rijec_pretrazivanja()
 {
     kljucna_rijec=$(whiptail --inputbox "\nUnesi naziv proizvoda:" 10 30 jimmy cokolada --title "UNOS PROIZVODA" 3>&1 1>&2 2>&3)
+    #ili kljucna_rijec=$(echo $kljucna_rijec | sed "s# #+#g") 
+    #here strings
     kljucna_rijec=$(sed "s# #+#g" <<<$kljucna_rijec)
 }
 
@@ -141,6 +143,7 @@ function razdvoji_proizvode()
     proizvodi_iz_Kauflanda=()
     for proizvod in "${shopping_lista[@]}"
     do
+        #awk primi kao input proizvod i pomoću ugrađene varijable $NF dohvati zadnju riječ u proizvodu
         trgovina=$(echo "$proizvod" | awk '{print $NF}')
         case $trgovina in
             "Konzum")
@@ -178,7 +181,7 @@ function posalji_shopping_listu_na_mail()
     razdvoji_proizvode
     sastavi_sadrzaj_maila
 
-    SENDGRID_API_KEY="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"
+    SENDGRID_API_KEY=""
     EMAIL_TO=$1
 
     curl -X "POST" "https://api.sendgrid.com/v3/mail/send" \
@@ -205,7 +208,7 @@ function posalji_shopping_listu_na_mail()
 function dohvati_id_i_naslove_videa()
 {
     id_youtube_kanala=("UC-lHJZR3Gqxm24_Vd_AJ5Yw" "UCsXVk37bltHxD1rDPwtNM8Q" "UCSPLhwvj0gBufjDRzSQb3GQ")
-    moj_kljuc="AIzaSyBf580w7a6jQj6a-T61N4CkcMIuObs7ShM"
+    moj_kljuc=""
     $(
         curl -s "https://www.googleapis.com/youtube/v3/search?key=$moj_kljuc&channelId=${id_youtube_kanala[izbor_youtube_kanala-1]}&part=snippet,id&order=date&maxResults=10" | 
         jq '.items | .[] | .id.videoId, .snippet.title' |

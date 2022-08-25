@@ -10,6 +10,8 @@ function izbrisi_prethodno_dodane_proizvode()
 function unesi_kljucnu_rijec_pretrazivanja()
 {
     kljucna_rijec=$(whiptail --inputbox "\nUnesi naziv proizvoda:" 10 30 jimmy cokolada --title "UNOS PROIZVODA" 3>&1 1>&2 2>&3)
+    #ili kljucna_rijec=$(echo $kljucna_rijec | sed "s# #+#g") 
+    #here strings
     kljucna_rijec=$(sed "s# #+#g" <<<$kljucna_rijec)
 }
 
@@ -132,6 +134,7 @@ function razdvoji_proizvode()
     proizvodi_iz_Kauflanda=()
     for proizvod in "${shopping_lista[@]}"
     do
+        #awk primi kao input proizvod i pomoću ugrađene varijable $NF dohvati zadnju riječ u proizvodu
         trgovina=$(echo "$proizvod" | awk '{print $NF}')
         case $trgovina in
             "Konzum")
